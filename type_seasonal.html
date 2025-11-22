@@ -1,0 +1,648 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Seasonal - Mobile Worker Personas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+  :root {
+    --c-mag: #730062;
+    --c-blue: #001D85;
+    --c-yellow: #F6DC00;
+    --c-orange: #D98918;
+    --c-green: #5D9849;
+    --c-gray: #75767A;
+    --bg: #fafbff;
+    --card: #ffffff;
+    --muted: #495057;
+    --border: #DFE3EB;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; background:var(--bg); color:#111; }
+
+  header{ position: sticky; top: 0; z-index: 5; background: var(--c-mag); color:#fff; padding: 10px 16px; border-bottom: 4px solid var(--c-blue); }
+  .headbar{ display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: 12px; }
+  .brand-title{ text-align: center; font-size: 18px; font-weight: 700; letter-spacing: .2px; line-height: 1.2; }
+  .logo{ height: 32px; width: auto; object-fit: contain; display: block; }
+  @media (max-width: 640px){ .logo{ height: 26px; } .brand-title{ font-size: 16px; } }
+
+  .toolbar{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+  .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-start; width:100%; }
+  label{ color:#fff; font-size:12px; }
+  select{ padding:4px 8px; font-size:12px; border-radius:6px; border:1px solid #CCD3E0; color:#111; }
+
+  .page { padding:16px; }
+  .layout{ margin-top: 12px; }
+  .content-full{ border:1px solid var(--border); border-radius:10px; padding:10px; background: var(--card); }
+
+  .persona{ border:1px solid #eee; border-radius:12px; overflow:hidden; background:#fff; }
+  .persona img{ width:100%; height:auto; display:block; }
+  .persona .pbody{ padding:10px; }
+  .persona h3{ margin:0 0 4px; font-size:16px; color: var(--c-mag); }
+  .persona p { margin:0 0 6px; color:#444; }
+  .persona ul{ margin:6px 0 0 18px; padding:0; color:#444; }
+
+  .muted{ color:var(--muted); font-size:12px; }
+  .hint{ color:#6b7280; font-size:11px; margin:-2px 0 8px; }
+  .section-title{ font-weight:700; margin: 6px 0 2px; color:var(--c-blue); }
+  .two-cols{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  .col{ border:1px solid var(--border); border-radius:8px; padding:8px; background:#fff; }
+  .badge{ font-size:11px; color:#fff; background:var(--c-blue); border-radius:999px; padding:1px 6px; margin-left:6px; }
+
+  .item{ margin:10px 0; }
+  .head{ display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
+  .label{ font-size: 13px; }
+  .meta { font-size: 12px; color:#333; text-align:right; }
+
+  .slim-wrap{ background:#EEF1F8; height:16px; border-radius:999px; position:relative; overflow:hidden; border:1px solid #DFE3EB; margin-top:4px; }
+  .slim-blue{ position:absolute; left:0; top:0; bottom:0; background:var(--c-mag); border-radius:999px;
+              mask-image: none; -webkit-mask-image: none; }
+  .striped{ 
+    background: repeating-linear-gradient(135deg, #730062, #730062 6px, #a35aa1 6px, #a35aa1 12px);
+  }
+  .slim-mark{ position:absolute; top:-3px; bottom:-3px; width:4px; background:var(--c-yellow); border-radius:3px; z-index:2; }
+
+  .stack-row{ display:grid; grid-template-columns: 440px 1fr 80px; gap:8px; align-items:center; margin:6px 0; }
+  .stack{ height: 22px; border-radius: 999px; overflow: hidden; background:#f2f4f7; display:flex; border:1px solid #E5E9F0; }
+  .seg{ height: 100%; position:relative; display:flex; align-items:center; justify-content:center; }
+  .sg1{ background: var(--c-mag); color:#fff; }
+  .sg2{ background: var(--c-orange); color:#fff; }
+  .sg3{ background: var(--c-gray); color:#fff; }
+  .sg4{ background: var(--c-blue); color:#fff; }
+  .sg5{ background: var(--c-green); color:#fff; }
+  .seg-label{ font-size:11px; line-height:1; padding:0 4px; white-space:nowrap; }
+  .legend{ display:flex; gap:10px; flex-wrap:wrap; font-size:12px; margin:6px 0 2px; }
+  .lg{ display:flex; align-items:center; gap:4px; }
+  .sw{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .cards{ display:flex; gap:12px; flex-wrap:wrap; }
+  .card{ border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:#fff; min-width:220px;}
+
+  /* Landing page specific */
+  .landing-intro{ max-width: 1200px; margin: 20px auto; text-align: center; }
+  .landing-intro h1{ font-size: 32px; color: var(--c-mag); margin-bottom: 12px; }
+  .landing-intro p{ font-size: 16px; color: #555; max-width: 800px; margin: 0 auto 30px; }
+
+  .type-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1400px; margin: 0 auto 30px; }
+  .type-card{ border: 2px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); 
+              cursor: pointer; transition: all 0.2s; text-decoration: none; color: inherit; display: block; }
+  .type-card:hover{ border-color: var(--c-mag); box-shadow: 0 4px 12px rgba(115, 0, 98, 0.15); transform: translateY(-2px); }
+  .type-card-img{ width: 100%; height: 200px; object-fit: cover; display: block; }
+  .type-card-body{ padding: 16px; }
+  .type-card-title{ font-size: 18px; font-weight: 700; color: var(--c-mag); margin-bottom: 8px; }
+  .type-card-desc{ font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 10px; }
+  .type-card-bullets{ font-size: 13px; color: #555; margin: 8px 0 0 20px; padding: 0; list-style: disc; }
+  .type-card-bullets li{ margin-bottom: 4px; }
+
+  .general-info-btn{ display: block; max-width: 400px; margin: 0 auto 40px; padding: 16px 32px; 
+                     background: var(--c-blue); color: white; text-align: center; border-radius: 8px;
+                     font-size: 16px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+  .general-info-btn:hover{ background: var(--c-mag); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 29, 133, 0.2); }
+
+  .back-link{ display: inline-block; margin: 10px 0; color: white; text-decoration: none; font-size: 14px; }
+  .back-link:hover{ text-decoration: underline; }
+
+  /* Loading indicator */
+  .loading-overlay{ position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(115, 0, 98, 0.95); 
+                     display: flex; align-items: center; justify-content: center; z-index: 9999; color: white; }
+  .loading-overlay.hidden{ display: none !important; }
+  .loading-content{ text-align: center; }
+  .loading-spinner{ width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); 
+                     border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin{ to { transform: rotate(360deg); } }
+</style>
+
+</head>
+<body>
+
+<!-- Loading indicator -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <h2>Loading dashboard data...</h2>
+    <p>Please wait while we load the data files</p>
+  </div>
+</div>
+
+<header>
+  <div class="headbar">
+    <img class="logo"
+         src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/ELA-logo.svg/2560px-ELA-logo.svg.png"
+         alt="ELA logo" referrerpolicy="no-referrer" loading="lazy" />
+    <div class="brand-title">Mobile worker personas</div>
+    <img class="logo"
+         src="https://www.veriangroup.com/hs-fs/hubfs/vrn_logo_Footer.png?width=1413&height=389&name=vrn_logo_Footer.png"
+         alt="Verian" referrerpolicy="no-referrer" loading="lazy" />
+  </div>
+
+  <div class="toolbar">
+    <a href="index.html" class="back-link">← Back to all personas</a>
+
+    <div class="controls" id="filters"></div>
+
+    <!-- Comparison controls -->
+    <div class="controls" id="cmpControls">
+      <label>Comparison mode:
+        <select id="cmpMode">
+          <option value="global" selected>Compare to whole sample baseline</option>
+          <option value="within">Compare levels within current type</option>
+        </select>
+      </label>
+      <label id="dimLabel" style="display:none;">Dimension:
+        <select id="dimSel">
+          <option value="isced_edu_group">Education</option>
+          <option value="Q4">Sex</option>
+          <option value="age_group">Age</option>
+        </select>
+      </label>
+      <label id="baseLabel" style="display:none;">Baseline level:
+        <select id="baseLevel"></select>
+      </label>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <div class="current-type" id="currentTypeHeading" style="font-weight:700; font-size:20px; color:var(--c-mag);">Seasonal</div>
+
+  <div class="layout">
+    <main class="content-full">
+      <div id="summary" class="muted"></div>
+
+      <!-- Top-10 layout A (Q17–Q25) -->
+      <div class="two-cols" style="margin-top:10px;">
+        <div class="col">
+          <div class="section-title">Top 10 above baseline — Information needs</div>
+          <div class="hint" id="hintA">Sorted by <b>|difference from baseline|</b>, largest → smallest</div>
+          <div id="aboveA"></div>
+        </div>
+        <div class="col">
+          <div class="section-title">Top 10 below baseline — Information needs</div>
+          <div class="hint">Sorted by <b>|difference from baseline|</b>, largest → smallest</div>
+          <div id="belowA"></div>
+        </div>
+      </div>
+
+      <!-- Top-10 layout B (Q27–Q38) -->
+      <div class="two-cols" style="margin-top:14px;">
+        <div class="col">
+          <div class="section-title">Top 10 above baseline — Information most difficult to find</div>
+          <div class="hint" id="hintB">Sorted by <b>|difference from baseline|</b>, largest → smallest</div>
+          <div id="aboveB"></div>
+        </div>
+        <div class="col">
+          <div class="section-title">Top 10 below baseline — Information most difficult to find</div>
+          <div class="hint">Sorted by <b>|difference from baseline|</b>, largest → smallest</div>
+          <div id="belowB"></div>
+        </div>
+      </div>
+
+      <!-- Scales and other extras -->
+      <div id="extras" style="margin-top:14px;"></div>
+    </main>
+  </div>
+</div>
+
+
+<script src="data.js"></script>
+<script>
+// Data is loaded from data.js (and chunks if needed)
+
+function pct(x){ const n = 100*Number(x); return isFinite(n) ? n.toFixed(0)+"%" : "NA"; }
+function fmt1(x){ const n = Number(x)*100; return isFinite(n) ? n.toFixed(1) : "NA"; }
+
+function currentFilters(filterSelects){
+  const obj = {};
+  FILTER_KEYS.forEach(k=> obj[k] = filterSelects[k]?.value || "All");
+  return obj;
+}
+
+// Wait for data to be fully loaded before initializing
+async function initializeWhenReady() {
+  const overlay = document.getElementById('loadingOverlay');
+
+  try {
+    // If dataLoaded promise exists (chunked data), wait for it with timeout
+    if (typeof dataLoaded !== 'undefined' && dataLoaded instanceof Promise) {
+      console.log('Waiting for chunked data to load...');
+
+      // Add 30 second timeout
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Data loading timeout')), 30000)
+      );
+
+      await Promise.race([dataLoaded, timeoutPromise]);
+      console.log('✓ Data loaded successfully');
+    } else {
+      console.log('✓ Data already available');
+      // Check if ITEM_DATA exists and has data
+      if (typeof ITEM_DATA === 'undefined' || !ITEM_DATA || ITEM_DATA.length === 0) {
+        console.warn('⚠️ ITEM_DATA is empty or undefined');
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error loading data:', error);
+    // Continue anyway - might work if data is actually loaded
+  }
+
+  // Hide loading overlay
+  if (overlay) {
+    overlay.classList.add('hidden');
+  }
+
+  // Small delay to ensure DOM is ready
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  // Now initialize the dashboard
+  try {
+    buildFilters();
+    setBaselineOptions();
+    toggleComparisonControls();
+    document.getElementById('cmpMode').onchange = ()=>{ toggleComparisonControls(); render(); };
+    document.getElementById('dimSel').onchange = ()=>{ setBaselineOptions(); render(); };
+    document.getElementById('baseLevel').onchange = render;
+    render();
+    console.log('✓ Dashboard initialized');
+  } catch (error) {
+    console.error('❌ Error initializing dashboard:', error);
+    if (overlay) {
+      overlay.classList.remove('hidden');
+      overlay.innerHTML = `
+        <div class="loading-content">
+          <h2>Error loading dashboard</h2>
+          <p>Please refresh the page or check the console for details.</p>
+          <p style="font-size: 12px; margin-top: 20px;">Error: ${error.message}</p>
+        </div>`;
+    }
+  }
+}
+
+// Start initialization (will wait for data if needed)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeWhenReady);
+} else {
+  initializeWhenReady();
+}
+
+function getItemRow(type, group, item, overrideFilters, filterSelects){
+  const F = currentFilters(filterSelects);
+  if(overrideFilters){ Object.assign(F, overrideFilters); }
+  const gvalTarget = type;
+  const matches = ITEM_DATA.filter(d =>
+    d.group===group && d.item===item && d.gval===gvalTarget &&
+    FILTER_KEYS.every(k => (F[k]==="All") ? true : d[k]===F[k])
+  );
+  if(matches.length===0){
+    const fb = ITEM_DATA.filter(d =>
+      d.group===group && d.item===item && d.gval===gvalTarget &&
+      FILTER_KEYS.every(k => d[k]==="__ALL__")
+    );
+    return fb.length ? fb[0] : null;
+  }
+  let n_ans=0, n1=0;
+  for(const r of matches){ n_ans += Number(r.n_ans)||0; n1 += Number(r.n1)||0; }
+  const out = Object.assign({}, matches[0]);
+  out.n_ans = n_ans; out.n1 = n1; out.rate = (n_ans>0) ? (n1/n_ans) : NaN;
+  return out;
+}
+
+function getBaselineRowWholeSample(group, item){
+  return ITEM_DATA.find(d => d.group===group && d.item===item &&
+                             d.gval==="__ALL__" && FILTER_KEYS.every(k => d[k]==="__ALL__"));
+}
+
+function flatItemList(groupsSet){
+  const out=[];
+  Object.keys(BLOCKS).forEach(g=>{
+    if(!groupsSet.has(g)) return;
+    (BLOCKS[g]||[]).forEach(it=> out.push({group:g, item:it, label:(ITEM_LABELS[it]||it)}));
+  });
+  return out;
+}
+
+function isSignificant(rtype, dim, base, level, item){
+  let hit = SIGS.find(s =>
+    s.respondent_type===rtype && s.dim===dim && s.item===item &&
+    s.baseline===base && s.level===level
+  );
+  if (hit) return !!hit.signif;
+  hit = SIGS.find(s =>
+    s.respondent_type===rtype && s.dim===dim && s.item===item &&
+    s.baseline===level && s.level===base
+  );
+  return hit ? !!hit.signif : false;
+}
+
+function computeTop10_global(groupsSet, currentType, filterSelects){
+  const rows=[];
+  for(const x of flatItemList(groupsSet)){
+    const t = getItemRow(currentType, x.group, x.item, null, filterSelects);
+    const b = getBaselineRowWholeSample(x.group, x.item);
+    if(!t || !b) continue;
+    if(!(Number(t.n_ans) > 20)) continue;
+    const rt = Number(t.rate), ro = Number(b.rate);
+    if(Number.isFinite(rt) && Number.isFinite(ro)){
+      rows.push({group:x.group, item:x.item, label:x.label,
+                 n:t.n_ans, rate_type:rt, rate_base:ro, diff:(rt-ro), signif:false});
+    }
+  }
+  return {
+    above: rows.filter(r=>r.diff>0).sort((a,b)=> Math.abs(b.diff)-Math.abs(a.diff)).slice(0,10),
+    below: rows.filter(r=>r.diff<0).sort((a,b)=> Math.abs(b.diff)-Math.abs(a.diff)).slice(0,10)
+  };
+}
+
+function computeTop10_within(groupsSet, currentType, dimSel, baseSel, filterSelects){
+  const dim   = dimSel.value;
+  const base  = baseSel.value;
+  const levels= (FILTER_OPS[dim]||[]).filter(v=>v!==base);
+  const picksUp=[], picksDn=[];
+  for(const x of flatItemList(groupsSet)){
+    const baseRow = getItemRow(currentType, x.group, x.item, {[dim]: base}, filterSelects);
+    if(!baseRow || !(Number(baseRow.n_ans) > 20)) continue;
+    let bestUp=null, bestDn=null, bestUpLvl=null, bestDnLvl=null;
+    for(const L of levels){
+      const altRow = getItemRow(currentType, x.group, x.item, {[dim]: L}, filterSelects);
+      if(!altRow || !(Number(altRow.n_ans) > 20)) continue;
+      const diff = Number(altRow.rate) - Number(baseRow.rate);
+      const rec = {group:x.group, item:x.item, label:`${ITEM_LABELS[x.item]||x.item} (${L} vs ${base})`,
+                   n: altRow.n_ans, rate_type: altRow.rate, rate_base: baseRow.rate, diff};
+      if(diff>0){ if(!bestUp || Math.abs(diff)>Math.abs(bestUp.diff)){bestUp=rec; bestUpLvl=L;} }
+      if(diff<0){ if(!bestDn || Math.abs(diff)>Math.abs(bestDn.diff)){bestDn=rec; bestDnLvl=L;} }
+    }
+    if(bestUp){
+      bestUp.signif = isSignificant(currentType, dim, base, bestUpLvl, x.item);
+      picksUp.push(bestUp);
+    }
+    if(bestDn){
+      bestDn.signif = isSignificant(currentType, dim, base, bestDnLvl, x.item);
+      picksDn.push(bestDn);
+    }
+  }
+  return {
+    above: picksUp.sort((a,b)=> Math.abs(b.diff)-Math.abs(a.diff)).slice(0,10),
+    below: picksDn.sort((a,b)=> Math.abs(b.diff)-Math.abs(a.diff)).slice(0,10)
+  };
+}
+
+function renderTop10Section(groupsSet, aboveEl, belowEl, currentType, cmpModeSel, dimSel, baseSel, filterSelects){
+  const mode = cmpModeSel.value;
+
+  const top10 = (mode==="within") ? 
+    computeTop10_within(groupsSet, currentType, dimSel, baseSel, filterSelects) : 
+    computeTop10_global(groupsSet, currentType, filterSelects);
+
+  function renderBars(container, arr){
+    container.innerHTML = "";
+    arr.forEach(d=>{
+      const wt = Math.max(0, Math.min(100, d.rate_type*100));
+      const wo = Math.max(0, Math.min(100, d.rate_base*100));
+      const row = document.createElement('div');
+      row.className = "item";
+      const stripeClass = (mode==="within" && d.signif) ? "striped" : "";
+
+      row.innerHTML = `
+        <div class="head">
+          <div class="label" title="${d.item}">${d.label} <span class="badge">${d.group}</span></div>
+          <div class="meta">${fmt1(Math.abs(d.diff))} pts &nbsp; (${pct(d.rate_type)} vs ${pct(d.rate_base)}) &nbsp; <span class="muted">n=${d.n}</span></div>
+        </div>
+        <div class="slim-wrap">
+          <div class="slim-blue ${stripeClass}" style="width:${wt}%"></div>
+          <div class="slim-mark" style="left: calc(${wo}% - 2px)"></div>
+        </div>`;
+      container.appendChild(row);
+    });
+    if(arr.length===0){
+      container.innerHTML = `<div class="muted">No items meet n &gt; 20.</div>`;
+    }
+  }
+  renderBars(aboveEl, top10.above);
+  renderBars(belowEl, top10.below);
+}
+
+function getScaleDist(group, item, type, filterSelects){
+  const F = currentFilters(filterSelects);
+  const gval = type;
+  const rows = DIST_DATA.filter(d =>
+    d.group===group && d.item===item && d.gval===gval &&
+    FILTER_KEYS.every(k => (F[k]==="All") ? true : d[k]===F[k])
+  );
+  if(rows.length===0){
+    const rows2 = DIST_DATA.filter(d =>
+      d.group===group && d.item===item && d.gval===gval &&
+      FILTER_KEYS.every(k => d[k]==="__ALL__")
+    );
+    if(rows2.length===0) return null;
+    const out=[0,0,0,0,0]; let n=0;
+    rows2.forEach(r=>{ const s=Number(r.score); const c=Number(r.count); if(s>=1&&s<=5){ out[s-1]+=c; n+=c; } });
+    return {counts:out, n:n};
+  }
+  const out=[0,0,0,0,0]; let n=0;
+  rows.forEach(r=>{ const s=Number(r.score); const c=Number(r.count); if(s>=1&&s<=5){ out[s-1]+=c; n+=c; } });
+  return {counts:out, n:n};
+}
+
+function stackHTMLOrdered(label, counts, order){
+  const total = counts.reduce((a,b)=>a+b,0);
+  const segs = order.map(idx=>{
+    const p = total>0 ? (100*counts[idx]/total) : 0;
+    const show = p>=8 ? `<span class="seg-label">${p.toFixed(0)}%</span>` : "";
+    return `<div class="seg sg${idx+1}" style="width:${p}%">${show}</div>`;
+  }).join("");
+  return `
+    <div class="stack-row">
+      <div class="label">${label}</div>
+      <div class="stack">${segs}</div>
+      <div style="text-align:right" class="muted">n=${total}</div>
+    </div>`;
+}
+
+function renderExtras(extrasEl, currentType, filterSelects){
+  const pieces = [];
+  const posLeftOrder = [4,3,2,1,0];
+
+  if("Q26" in BLOCKS){
+    const items = (BLOCKS["Q26"]||[]);
+    const rows = [];
+    items.forEach(it=>{
+      const d = getScaleDist("Q26", it, currentType, filterSelects);
+      if(!d) return;
+      const total = d.counts.reduce((a,b)=>a+b,0) || 0;
+      const posShare = total>0 ? ((d.counts[3]||0)+(d.counts[4]||0)) / total : 0;
+      rows.push({item:it, label:(ITEM_LABELS[it]||it), counts:d.counts, posShare});
+    });
+    rows.sort((a,b)=> b.posShare - a.posShare);
+    let html = `<div class="section-title">Clarity and completeness of information</div>
+                <div class="hint" style="font-style:italic; margin-bottom:8px;">To what extent do you agree with the following statement? The information I found or received about the following topics was clear and complete.</div>
+                <div class="hint">Bars sorted by <b>Agree + Strongly agree (4+5)</b>, high → low · Left→right: <b>Strongly agree, Agree, Neither, Disagree, Strongly disagree</b></div>
+                <div class="legend">
+                  <span class="lg"><span class="sw sg5"></span> Strongly agree</span>
+                  <span class="lg"><span class="sw sg4"></span> Agree</span>
+                  <span class="lg"><span class="sw sg3"></span> Neither</span>
+                  <span class="lg"><span class="sw sg2"></span> Disagree</span>
+                  <span class="lg"><span class="sw sg1"></span> Strongly disagree</span>
+                </div>`;
+    rows.forEach(r=>{ html += stackHTMLOrdered(r.label, r.counts, posLeftOrder); });
+    pieces.push(html);
+  }
+
+  if("Q46" in BLOCKS){
+    const items = (BLOCKS["Q46"]||[]);
+    const rows = [];
+    items.forEach(it=>{
+      const d = getScaleDist("Q46", it, currentType, filterSelects);
+      if(!d) return;
+      const total = d.counts.reduce((a,b)=>a+b,0) || 0;
+      const hiShare = total>0 ? ((d.counts[3]||0)+(d.counts[4]||0)) / total : 0;
+      rows.push({item:it, label:(ITEM_LABELS[it]||it), counts:d.counts, hiShare});
+    });
+    rows.sort((a,b)=> b.hiShare - a.hiShare);
+    let html = `<div class="section-title">Frequency of using sources</div>
+                <div class="hint">Bars sorted by <b>Weekly + Daily (4+5)</b>, high → low · Left→right: <b>Daily, Weekly, Monthly, Less than monthly, Never</b></div>
+                <div class="legend">
+                  <span class="lg"><span class="sw sg5"></span> Daily</span>
+                  <span class="lg"><span class="sw sg4"></span> Weekly</span>
+                  <span class="lg"><span class="sw sg3"></span> Monthly</span>
+                  <span class="lg"><span class="sw sg2"></span> Less than monthly</span>
+                  <span class="lg"><span class="sw sg1"></span> Never</span>
+                </div>`;
+    rows.forEach(r=>{ html += stackHTMLOrdered(r.label, r.counts, posLeftOrder); });
+    pieces.push(html);
+  }
+
+  const BIN_LABELS = {
+    Q40: "Could not find any information",
+    Q42: "Needed to pay for information",
+    Q54: "Did you have children under 24?",
+    Q55: "Did you have pets?"
+  };
+  const cards=[];
+  ["Q40","Q42","Q54","Q55"].forEach(g=>{
+    if(!(g in BLOCKS)) return;
+    const it = (BLOCKS[g]||[])[0];
+    if(!it) return;
+    const t = getItemRow(currentType, g, it, null, filterSelects);
+    const b = getBaselineRowWholeSample(g, it);
+    if(!t || !b) return;
+    cards.push(`<div class="card">
+      <div class="muted" style="margin-bottom:4px">${BIN_LABELS[g] || g}</div>
+      <div><b>${pct(t.rate)}</b> <span class="muted">(${currentType})</span></div>
+      <div class="muted">Baseline: ${pct(b.rate)}</div>
+      <div class="muted">n=${t.n_ans}</div>
+    </div>`);
+  });
+  if(cards.length){
+    pieces.push(`<div class="section-title">Other questions</div><div class="cards">${cards.join("")}</div>`);
+  }
+  extrasEl.innerHTML = pieces.join("") || "";
+}
+</script>
+
+
+<script>
+const currentType = "Seasonal";
+
+const filtersEl = document.getElementById('filters');
+const aboveAEl = document.getElementById('aboveA');
+const belowAEl = document.getElementById('belowA');
+const aboveBEl = document.getElementById('aboveB');
+const belowBEl = document.getElementById('belowB');
+const summaryEl = document.getElementById('summary');
+const extrasEl = document.getElementById('extras');
+const headingEl = document.getElementById('currentTypeHeading');
+const cmpModeSel = document.getElementById('cmpMode');
+const dimSel     = document.getElementById('dimSel');
+const baseSel    = document.getElementById('baseLevel');
+
+/* Build filter selects */
+const filterSelects = {};
+function buildFilters(){
+  filtersEl.innerHTML = "";
+  FILTER_KEYS.forEach(k=>{
+    const wrap = document.createElement('label');
+    const sel  = document.createElement('select');
+    const lab  = FILTER_LABELS[k] || k;
+    wrap.textContent = lab + ": ";
+    sel.style.marginLeft = "4px";
+    const vals = (FILTER_OPS[k] || []);
+    sel.innerHTML = "";
+    ["All", ...vals].forEach(v=>{
+      const o = document.createElement('option');
+      o.value=v; o.textContent=v; sel.appendChild(o);
+    });
+    sel.value = "All";
+    sel.onchange = ()=>render();
+    wrap.appendChild(sel);
+    filtersEl.appendChild(wrap);
+    filterSelects[k] = sel;
+  });
+}
+
+function setBaselineOptions(){
+  const dim = dimSel.value;
+  baseSel.innerHTML = (FILTER_OPS[dim]||[]).map(v=>`<option value="${v}">${v}</option>`).join("");
+}
+
+function toggleComparisonControls(){
+  const mode = cmpModeSel.value;
+  const dimLabel = document.getElementById('dimLabel');
+  const baseLabel = document.getElementById('baseLabel');
+  if(mode === 'within'){
+    dimLabel.style.display = '';
+    baseLabel.style.display = '';
+  } else {
+    dimLabel.style.display = 'none';
+    baseLabel.style.display = 'none';
+  }
+}
+
+function render(){
+  headingEl.textContent = (currentType === "ALL_TYPES") ? "All respondent types" : currentType;
+  toggleComparisonControls();
+
+  const F = currentFilters(filterSelects);
+  const fstr = FILTER_KEYS.map(k => `${FILTER_LABELS[k]||k}: ${F[k]}`).join(" · ");
+
+  const isAllTypes = (currentType === "ALL_TYPES");
+
+  if(cmpModeSel.value==="within"){
+    const dimName = FILTER_LABELS[dimSel.value] || dimSel.value;
+    const ta = computeTop10_within(GROUPS_A, currentType, dimSel, baseSel, filterSelects);
+    const tb = computeTop10_within(GROUPS_B, currentType, dimSel, baseSel, filterSelects);
+    const hasSigA = ta.above.concat(ta.below).some(d => d.signif);
+    const hasSigB = tb.above.concat(tb.below).some(d => d.signif);
+
+    // Hide summary for All Types, show for specific types
+    if(isAllTypes){
+      summaryEl.innerHTML = ``;
+    } else {
+      summaryEl.innerHTML = `<b>${currentType}</b> — Comparing <i>levels within current type</i> by <b>${dimName}</b>; baseline: <b>${baseSel.value}</b>. Striped bars denote <b>FDR q&lt;0.05</b> from a logit with controls. Filters: <i>${fstr}</i>. Items require <b>n &gt; 20</b> in the compared level.`;
+    }
+    document.getElementById('hintA').textContent = "Sorted by |difference vs baseline level|, largest → smallest" + (hasSigA ? "" : " · No significant contrasts (q<0.05).");
+    document.getElementById('hintB').textContent = "Sorted by |difference vs baseline level|, largest → smallest" + (hasSigB ? "" : " · No significant contrasts (q<0.05).");
+
+    renderTop10Section(GROUPS_A, aboveAEl, belowAEl, currentType, cmpModeSel, dimSel, baseSel, filterSelects);
+    renderTop10Section(GROUPS_B, aboveBEl, belowBEl, currentType, cmpModeSel, dimSel, baseSel, filterSelects);
+
+  } else {
+    // Hide summary for All Types, show for specific types
+    if(isAllTypes){
+      summaryEl.innerHTML = ``;
+    } else {
+      summaryEl.innerHTML = `<b>${currentType}</b> — Comparing to the <i>whole sample</i> baseline (__ALL__). Filters: <i>${fstr}</i>. Only items with <b>n &gt; 20</b> are shown.`;
+    }
+    document.getElementById('hintA').textContent = "Sorted by |difference from whole-sample baseline|, largest → smallest";
+    document.getElementById('hintB').textContent = "Sorted by |difference from whole-sample baseline|, largest → smallest";
+
+    renderTop10Section(GROUPS_A, aboveAEl, belowAEl, currentType, cmpModeSel, dimSel, baseSel, filterSelects);
+    renderTop10Section(GROUPS_B, aboveBEl, belowBEl, currentType, cmpModeSel, dimSel, baseSel, filterSelects);
+  }
+
+  renderExtras(extrasEl, currentType, filterSelects);
+}
+
+// Initialization is handled by initializeWhenReady() function above
+</script>
+</body>
+</html>
